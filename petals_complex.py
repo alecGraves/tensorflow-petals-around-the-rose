@@ -3,9 +3,20 @@
 # This program was made to solve the puzzle
 #   known as "petals around the rose".
 #
+# Those who come to understand the puzzle 
+#   become a member to the sacred organization
+#   known as the potentates of the rose.
+#
+# Once you become a potentate, it is very
+#   important that you do not share how you
+#   solved the puzzle with anyone.
+#
 # I did this in an attempt to make something
 #   that is intelligent enough to be called
 #           a potentate of the rose.
+#
+# This was adaped from tensorflow docs 
+#   example code.
 #
 # And steffen owes me a deer if I can do this.
 #
