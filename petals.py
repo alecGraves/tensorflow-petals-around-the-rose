@@ -100,31 +100,38 @@ b = bias_variable([1])
 y = tf.sigmoid(tf.matmul(x, W) + b)
 #y = tf.tanh(tf.matmul(x, W) + b)
 
+#experimental changes:
+cross_entropy = tf.reduce_mean(tf.abs(tf.sub((y), (y_))))
 #cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
 #cross_entropy = -tf.reduce_sum(y_*tf.log(y), reduction_indices=[1])
-cross_entropy = tf.reduce_mean(-tf.nn.sigmoid_cross_entropy_with_logits(y, y_))
-#cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
+#best working one:
+#cross_entropy = -tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(y, y_))
 
-train_step = tf.train.MomentumOptimizer(1e-5, 0.2).minimize(cross_entropy)
+train_step = tf.train.GradientDescentOptimizer(7e-3).minimize(cross_entropy)
 
 sess.run(tf.initialize_all_variables())
 
 # Evaluation of the model:
 
-correct_prediction = tf.greater(0.01, tf.abs(tf.sub((y), (y_))))
+correct_prediction = tf.greater(0.05, tf.abs(tf.sub((y), (y_))))
 
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 #accuracy = tf.cast(correct_prediction, tf.float32)
 
 batchx, batchy = make_batch(inputs, answers, 100)
+
 print("Accuracy: ", sess.run(accuracy, feed_dict={x: batchx, y_: batchy}))
-print(sess.run(tf.abs(tf.sub((y), (y_))),feed_dict={x: batchx, y_: batchy}))
 
 
 for i in range(100000):
-    batchx, batchy = make_batch(inputs, answers, 1000)
+    batchx, batchy = make_batch(inputs, answers, 10000)
     train_step.run(feed_dict={x: batchx, y_:batchy})
-    #print(sess.run(W))
-    batchx, batchy = make_batch(inputs, answers, 1000)
-    print("Accuracy: ",  sess.run(accuracy, feed_dict={x: batchx, y_: batchy}), "\n")
+    if (i%1000 == 0):
+        print(sess.run(W), sess.run(b))
+    if (i%50):
+        print("Accuracy: ", sess.run(accuracy, feed_dict={x: batchx, y_: batchy}))
 
+batchx, batchy = make_batch(inputs, answers, 100)
+print(sess.run(tf.abs(tf.sub((y), (y_))),feed_dict={x: batchx, y_: batchy}))
+print("Accuracy: ", sess.run(accuracy, feed_dict={x: batchx, y_: batchy}))
+print(sess.run(W), sess.run(d))
