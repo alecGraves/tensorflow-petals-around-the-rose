@@ -60,12 +60,7 @@ def get_data():
     dataset_file.close()
     ins = np.array(ins)
     outs = np.array(outs)
-    # Convert to better format for pur purposes
-    tmp = np.zeros((ins.shape[0], 6))
-    for i in range(ins.shape[0]):
-        for j in range(ins.shape[1]):
-            tmp[i][ins[i][j]-1] = tmp[i][ins[i][j]-1] + 0.2
-    ins = tmp
+    # Convert dataset answers to better format for pur purposes
     for i in range(len(outs)):
         outs[i] = 1/(1+np.exp(-1*outs[i]/20.0))
         if(i % 10000 == 0):
@@ -89,10 +84,10 @@ inputs, answers = get_data()
 # Start TensorFlow part
 sess = tf.InteractiveSession()
 
-x = tf.placeholder(tf.float32, shape=[None, 6])
+x = tf.placeholder(tf.float32, shape=[None, 5])
 y_ = tf.placeholder(tf.float32, shape=[None, 1])
 
-W = weight_variable((6,1))
+W = weight_variable((5,1))
 b = bias_variable([1])
 
 y = tf.sigmoid(tf.matmul(x, W) + b)
@@ -105,7 +100,7 @@ cross_entropy = tf.reduce_mean(tf.abs(tf.sub((y), (y_))))
 #best working one:
 #cross_entropy = -tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(y, y_))
 
-train_step = tf.train.GradientDescentOptimizer(7e-3).minimize(cross_entropy)
+train_step = tf.train.GradientDescentOptimizer(7e-4).minimize(cross_entropy)
 
 sess.run(tf.initialize_all_variables())
 
@@ -116,21 +111,16 @@ correct_prediction = tf.greater(0.05, tf.abs(tf.sub((y), (y_))))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 #accuracy = tf.cast(correct_prediction, tf.float32)
 
-batchx, batchy = make_batch(inputs, answers, 100)
+batchx, batchy = make_batch(inputs, answers, 1000)
 
-print("Accuracy: ", sess.run(accuracy, feed_dict={x: batchx, y_: batchy}))
+current_accuracy = sess.run(accuracy, feed_dict={x: batchx, y_: batchy})
 
+fittest_model = [sess.run(W), sess.run(b), current_accuracy]
 
-for i in range(100000):
+while (current_accuracy < 1.0):
     batchx, batchy = make_batch(inputs, answers, 10000)
     train_step.run(feed_dict={x: batchx, y_:batchy})
-    if (i%1000 == 0):
-        print(sess.run(W), sess.run(b))
-    if (i%50):
-        print("Accuracy: ", sess.run(accuracy, feed_dict={x: batchx, y_: batchy}))
-
-# Fun stuff to play with:
-#batchx, batchy = make_batch(inputs, answers, 100)
-#print(sess.run(tf.abs(tf.sub((y), (y_))),feed_dict={x: batchx, y_: batchy}))
-#print("Accuracy: ", sess.run(accuracy, feed_dict={x: batchx, y_: batchy}))
-#print(sess.run(W), sess.run(d))
+    current_accuracy = sess.run(accuracy, feed_dict={x: batchx, y_: batchy})
+    if (fittest_model[2] < current_accuracy):
+        fittest_model = [sess.run(W), sess.run(b), current_accuracy]
+        print(fittest_model)
