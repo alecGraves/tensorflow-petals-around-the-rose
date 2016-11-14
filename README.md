@@ -12,7 +12,7 @@ or
 # Petals Around the Rose
 Petals Around the Rose is a mathematical logic/puzzle game. To play the game, you roll five dice and ask someone who has already figured out the puzzle what the score is for that collection of dice. You have solved the puzzle when you have figured out the algorithm that converts the 5 dice inputs into the correct score.
 
-When I was first introduced to the puzzle, it tooke me a couple of days to figure out. After solving it, I have created a program that learns the solution to the puzzle from a dataset of dice rolls and scores.
+When I was first introduced to the puzzle, it took me a couple of days to figure out. After solving it, I have created a program that learns the solution to the puzzle from a dataset of dice rolls and scores.
 
 Check out [this](http://www.borrett.id.au/computing/petals-j.htm) link for an in-depth introduction to the puzzle.
 
